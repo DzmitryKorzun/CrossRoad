@@ -11,9 +11,9 @@ public class LevelGenerator : MonoBehaviour
     void Start()
     {
         Instantiate(let[0]);
-        let[0].transform.position = new Vector3(4, 0.01f, 0);
+        let[0].transform.position = new Vector3(4.5f, 0.01f, 0);
         Instantiate(let[0]);
-        let[0].transform.position = new Vector3(-4, 0.01f, 0);
+        let[0].transform.position = new Vector3(-4.5f, 0.01f, 0);
     }
 
     void Update()
