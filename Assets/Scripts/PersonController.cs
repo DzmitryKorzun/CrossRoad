@@ -21,6 +21,9 @@ public class PersonController : MonoBehaviour
     public delegate void OnSwipeInput(SwipeType t);
     public static event OnSwipeInput SwipeEvent;
 
+    //private Vector3 posPerson = new Vector3();
+    //private Vector3 rotPerson = new Vector3();
+
     private void Start()
     {
         PersonController.SwipeEvent += CheckInput;
@@ -28,28 +31,32 @@ public class PersonController : MonoBehaviour
 
     private void CheckInput(SwipeType t)
     {
-        Debug.Log("Свайп");
-            if (t == SwipeType.Up)
-            {
-                countDirectionLeftRight++;
-                transform.DOMove(new Vector3(countDirectionLeftRight, 0, countForwardBack), 0.5f, true);
-            }
-            if (t == SwipeType.Down)
-            {
-                countDirectionLeftRight--;
-                transform.DOMove(new Vector3(countDirectionLeftRight, 0, countForwardBack), 0.5f, true);
-            }
+        if (t == SwipeType.Right)
+        {
+            countDirectionLeftRight++;
+            transform.DOJump(new Vector3(countDirectionLeftRight, 0, countForwardBack), 1, 1, 1, false);
+            transform.DORotate(new Vector3(0, 270, 0), 0.2f);
+        }
+        if (t == SwipeType.Left)
+        {
+            countDirectionLeftRight--;
+            transform.DOJump(new Vector3(countDirectionLeftRight, 0, countForwardBack), 1, 1, 1, false);
+            transform.DORotate(new Vector3(0, 90, 0), 0.2f);
+        }
 
-            if (t == SwipeType.Left)
-            {
-                countForwardBack++;
-                transform.DOMove(new Vector3(countDirectionLeftRight, 0, countForwardBack), 0.5f, true);
-            }
-            if (t == SwipeType.Right)
-            {
-                countForwardBack--;
-                transform.DOMove(new Vector3(countDirectionLeftRight, 0, countForwardBack), 0.5f, true);
-            }
+        if (t == SwipeType.Down)
+        {
+            countForwardBack++;
+            transform.DOJump(new Vector3(countDirectionLeftRight, 0, countForwardBack), 1, 1, 1, false);
+            transform.DORotate(new Vector3(0, 180, 0), 0.2f);
+        }
+        
+        if (t == SwipeType.Up)
+        {
+            countForwardBack--;
+            transform.DOJump(new Vector3(countDirectionLeftRight, 0, countForwardBack), 1, 1, 1, false);
+            transform.DORotate(new Vector3(0, 0, 0), 0.2f);
+        }
         
     }
 
@@ -98,8 +105,6 @@ public class PersonController : MonoBehaviour
             resetSwipe();
         }
     }
-
-
 
     void resetSwipe()
     {
