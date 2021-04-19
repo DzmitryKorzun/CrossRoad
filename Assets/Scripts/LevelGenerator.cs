@@ -10,7 +10,8 @@ public class LevelGenerator : MonoBehaviour
 
     public GameObject[] let = new GameObject[10];
     public GameObject[] type_platforms = new GameObject[5];
-    public List<GameObject> platforms;
+    public List<GameObject> plat;
+
 
     int platform_posX;
     int typePlatform;
@@ -26,8 +27,7 @@ public class LevelGenerator : MonoBehaviour
         {
             typePlatform = Random.Range(0, 3);
             if (i < 5) typePlatform = 0;    
-            Instantiate(type_platforms[typePlatform], new Vector3(0, 0.01f, counter), Quaternion.identity);
-            platforms.Add(type_platforms[typePlatform]);
+            plat.Add(Instantiate(type_platforms[typePlatform], new Vector3(0, 0.01f, counter), Quaternion.identity));
             letGenerator(typePlatform, counter);
             counter++;
         }
@@ -56,18 +56,20 @@ public class LevelGenerator : MonoBehaviour
 
     public void destroyPlatform()
     {
-        Destroy(platforms[0]);
-        platforms.RemoveAt(0);
+        Destroy(plat[0]);
+        plat.RemoveAt(0);
     }
 
     public void addNewPlatform()
     {
         typePlatform = Random.Range(0, 3);
-        Instantiate(type_platforms[typePlatform], new Vector3(0, 0.01f, counter), Quaternion.identity);
-        platforms.Add(type_platforms[typePlatform]);
+        plat.Add(Instantiate(type_platforms[typePlatform], new Vector3(0, 0.01f, counter), Quaternion.identity));
         letGenerator(typePlatform, counter);
         counter++;
     }
+
+
+
    
 
 
