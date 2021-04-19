@@ -6,8 +6,14 @@ using DG.Tweening;
 
 public class PersonController : MonoBehaviour
 {
+    public GameObject target;
+    public GameObject LevelGenerator;
+    private LevelGenerator Lvl_G;
+
+    int stepCounter;
     int countForwardBack = 0;
     int countDirectionLeftRight = 0;
+
 
     bool isDragging;
     Vector2 tabPoint, swipeDelta;
@@ -21,11 +27,10 @@ public class PersonController : MonoBehaviour
     public delegate void OnSwipeInput(SwipeType t);
     public static event OnSwipeInput SwipeEvent;
 
-    //private Vector3 posPerson = new Vector3();
-    //private Vector3 rotPerson = new Vector3();
 
     private void Start()
     {
+        Lvl_G = LevelGenerator.GetComponent<LevelGenerator>();
         PersonController.SwipeEvent += CheckInput;
     }
 
@@ -36,6 +41,7 @@ public class PersonController : MonoBehaviour
             countDirectionLeftRight++;
             transform.DOJump(new Vector3(countDirectionLeftRight, 0, countForwardBack), 1, 1, 1, false);
             transform.DORotate(new Vector3(0, 270, 0), 0.2f);
+
         }
         if (t == SwipeType.Left)
         {
@@ -49,6 +55,8 @@ public class PersonController : MonoBehaviour
             countForwardBack++;
             transform.DOJump(new Vector3(countDirectionLeftRight, 0, countForwardBack), 1, 1, 1, false);
             transform.DORotate(new Vector3(0, 180, 0), 0.2f);
+            Lvl_G.addNewPlatform();
+            Lvl_G.destroyPlatform();
         }
         
         if (t == SwipeType.Up)
@@ -111,4 +119,29 @@ public class PersonController : MonoBehaviour
         isDragging = false;
         tabPoint = swipeDelta = Vector2.zero;
     }
+
+
+    private bool checkLet()
+    {
+        RaycastHit hit;
+        Ray ray = new Ray(transform.position, target.transform.position - transform.position);
+
+        Physics.Raycast(ray, out hit);
+
+        //если луч с чем-то пересёкся, то..
+        if (hit.collider != null)
+        {
+
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+
+
+
+
+    }
+
 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SwipeController : MonoBehaviour
+public class platform_1 : MonoBehaviour
 {
     // Start is called before the first frame update
     void Start()
@@ -13,6 +13,16 @@ public class SwipeController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+
+        if (collision.gameObject.name == "dead_zone")
+        {
+            Destroy(gameObject);
+        }
+    }
+
 }
