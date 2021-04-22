@@ -2,18 +2,29 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using DG.Tweening;
 
 public class PersonController : MonoBehaviour
 {
-    public GameObject target;
     public GameObject LevelGenerator;
-    private LevelGenerator Lvl_G;
+    public GameObject camera;
+    public GameObject poolSysObj;
+    public GameObject stepCountText;
+    private Text ScoreText;
+    public int coinNum;
+    public AudioClip din;
+    AudioSource audio;
 
-    int stepCounter;
+
+
+    private PoolingSystem poolingSystem;
+
+    public int stepCounter = 0;
     int countForwardBack = 0;
     int countDirectionLeftRight = 0;
-
+    int stepsBackCounter = 0;
 
     bool isDragging;
     Vector2 tabPoint, swipeDelta;
@@ -27,43 +38,72 @@ public class PersonController : MonoBehaviour
     public delegate void OnSwipeInput(SwipeType t);
     public static event OnSwipeInput SwipeEvent;
 
-
     private void Start()
     {
-        Lvl_G = LevelGenerator.GetComponent<LevelGenerator>();
-        PersonController.SwipeEvent += CheckInput;
-    }
-
-    private void CheckInput(SwipeType t)
-    {
-        if (t == SwipeType.Right)
+        var audioLis = camera.GetComponent<AudioListener>();
+        if (PlayerPrefs.GetInt("sound") == 0)
         {
+            audioLis.enabled = false;
+        } 
+        else
+        {
+            audioLis.enabled = true;
+        }
+            
+            
+        audio = GetComponent<AudioSource>();
+        poolingSystem = poolSysObj.GetComponent<PoolingSystem>();
+        PersonController.SwipeEvent += CheckInput;
+        ScoreText = stepCountText.GetComponent<Text>();        
+    }    
+
+    public void CheckInput(SwipeType t)
+    {
+        if (t == SwipeType.Right && countDirectionLeftRight<4 && checkLetright())
+        {
+            audio.PlayOneShot(din);
+            camera.transform.DOMove(new Vector3(transform.position.x, camera.transform.position.y, camera.transform.position.z), 0.1f);
+            //camera.transform.position = new Vector3(transform.position.x, camera.transform.position.y, camera.transform.position.z);
             countDirectionLeftRight++;
-            transform.DOJump(new Vector3(countDirectionLeftRight, 0, countForwardBack), 1, 1, 1, false);
+            transform.DOJump(new Vector3(countDirectionLeftRight, 0, countForwardBack), 1, 1, 0.2f, false);
             transform.DORotate(new Vector3(0, 270, 0), 0.2f);
 
         }
-        if (t == SwipeType.Left)
+        if (t == SwipeType.Left && countDirectionLeftRight >-4 && checkLetleft())
         {
+            audio.PlayOneShot(din);
+            camera.transform.DOMove(new Vector3(transform.position.x, camera.transform.position.y, camera.transform.position.z), 0.1f);
+            //camera.transform.position = new Vector3(transform.position.x, camera.transform.position.y, camera.transform.position.z);
             countDirectionLeftRight--;
-            transform.DOJump(new Vector3(countDirectionLeftRight, 0, countForwardBack), 1, 1, 1, false);
+            transform.DOJump(new Vector3(countDirectionLeftRight, 0, countForwardBack), 1, 1, 0.2f, false);
             transform.DORotate(new Vector3(0, 90, 0), 0.2f);
         }
 
-        if (t == SwipeType.Down)
+        if (t == SwipeType.Down && checkLetUp()) //Персонаж идет вперед
         {
+
+            audio.PlayOneShot(din);
             countForwardBack++;
-            transform.DOJump(new Vector3(countDirectionLeftRight, 0, countForwardBack), 1, 1, 1, false);
+            transform.DOJump(new Vector3(countDirectionLeftRight, 0, countForwardBack), 1, 1, 0.2f, false);
             transform.DORotate(new Vector3(0, 180, 0), 0.2f);
-            Lvl_G.addNewPlatform();
-            Lvl_G.destroyPlatform();
+
+            if (stepsBackCounter == 0)
+            {
+                poolingSystem.lvl_generator();
+                stepCounter++;
+                ScoreText.text = stepCounter.ToString();
+            }                           
+            else stepsBackCounter--;
+
         }
         
-        if (t == SwipeType.Up)
+        if (t == SwipeType.Up && checkLetdown()) //Персонаж идет назад
         {
+            audio.PlayOneShot(din);
             countForwardBack--;
-            transform.DOJump(new Vector3(countDirectionLeftRight, 0, countForwardBack), 1, 1, 1, false);
+            transform.DOJump(new Vector3(countDirectionLeftRight, 0, countForwardBack), 1, 1, 0.2f, false);
             transform.DORotate(new Vector3(0, 0, 0), 0.2f);
+            stepsBackCounter++;
         }
         
     }
@@ -76,7 +116,6 @@ public class PersonController : MonoBehaviour
             {
                 isDragging = true;
                 tabPoint = Input.touches[0].position;
-
             }
             else if (Input.touches[0].phase == TouchPhase.Canceled || Input.touches[0].phase == TouchPhase.Ended)
             {
@@ -84,10 +123,13 @@ public class PersonController : MonoBehaviour
             }
         }
         CalculateSwipe();
+
+        //Debug.DrawRay(new Vector3(transform.position.x, transform.position.y + 0.3f, transform.position.z + 0.3f), Vector3.forward);
+        //Debug.DrawRay(new Vector3(transform.position.x, transform.position.y + 0.3f, transform.position.z - 0.3f), Vector3.back);
+        //Debug.DrawRay(new Vector3(transform.position.x - 0.3f, transform.position.y + 0.3f, transform.position.z), Vector3.left);
+        //Debug.DrawRay(new Vector3(transform.position.x + 0.3f, transform.position.y + 0.3f, transform.position.z), Vector3.right);
+
     }
-
-
-
 
     void CalculateSwipe()
     {
@@ -121,27 +163,38 @@ public class PersonController : MonoBehaviour
     }
 
 
-    private bool checkLet()
+    private bool checkLetUp()
     {
         RaycastHit hit;
-        Ray ray = new Ray(transform.position, target.transform.position - transform.position);
-
-        Physics.Raycast(ray, out hit);
-
-        //если луч с чем-то пересёкся, то..
-        if (hit.collider != null)
-        {
-
-            return false;
-        }
-        else
-        {
-            return true;
-        }
-
-
-
-
+        Ray ray_up = new Ray(new Vector3(transform.position.x, transform.position.y+ 0.3f, transform.position.z + 0.3f), Vector3.forward);
+        if (Physics.Raycast(ray_up, out hit, 0.70f) && hit.collider.tag == "Let") return false;
+        return true;
     }
+    private bool checkLetdown()
+    {
+        RaycastHit hit;
+        Ray ray_down = new Ray(new Vector3(transform.position.x, transform.position.y + 0.3f, transform.position.z - 0.3f), Vector3.back);
+        if (Physics.Raycast(ray_down, out hit, 0.70f) && hit.collider.tag == "Let") return false;
+        return true;
+    }
+
+    private bool checkLetleft()
+    {
+        RaycastHit hit;
+        Ray ray_left = new Ray(new Vector3(transform.position.x - 0.3f, transform.position.y + 0.3f, transform.position.z), Vector3.left);
+        if (Physics.Raycast(ray_left, out hit, 0.70f) && hit.collider.tag == "Let") return false;
+        return true;
+    }
+
+    private bool checkLetright()
+    {
+        RaycastHit hit;
+        Ray ray_right = new Ray(new Vector3(transform.position.x + 0.3f, transform.position.y + 0.3f, transform.position.z), Vector3.right);
+        if (Physics.Raycast(ray_right, out hit, 0.70f) && hit.collider.tag == "Let") return false;
+        return true;
+    }
+
+
+
 
 }
