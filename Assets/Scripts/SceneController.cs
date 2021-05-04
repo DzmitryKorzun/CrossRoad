@@ -14,7 +14,7 @@ public class SceneController : MonoBehaviour
     {
         recTxt.GetComponent<Text>().text = "Рекорд: "+PlayerPrefs.GetInt("record").ToString();
         coinTxt.GetComponent<Text>().text = PlayerPrefs.GetInt("coins").ToString();
-        if (PlayerPrefs.GetInt("sound", 0) == 0)
+        if (PlayerPrefs.GetInt("sound", 0) == 1)
         {
             TxtButton.text = "Включены";
         }

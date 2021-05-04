@@ -10,8 +10,9 @@ public class platform_2_Logic : MonoBehaviour
     List<GameObject> car_2;
     private float time;
     int type_car;
-    int pos;
-    int last_pos;
+    public float pos;
+
+
     void Start()
     {
         poolSys = GameObject.Find("PoolingObj");
@@ -24,10 +25,16 @@ public class platform_2_Logic : MonoBehaviour
 
     void Update()
     {
+
+
         time -= Time.deltaTime;
         if (time <= 0 && this.gameObject.activeSelf)
         {
-            if (this.gameObject.activeSelf) pos = poolSys.GetComponent<PoolingSystem>().pos_plat_2;
+            if (this.gameObject.activeSelf)
+            {
+                pos = this.gameObject.transform.position.z;
+            }
+
             time = Random.Range(2, 6);
             if (type_car == 1)
             {

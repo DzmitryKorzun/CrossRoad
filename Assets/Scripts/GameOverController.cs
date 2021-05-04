@@ -15,7 +15,7 @@ public class GameOverController : MonoBehaviour
         currentRun.text += PlayerPrefs.GetInt("current").ToString();
         Record.text += PlayerPrefs.GetInt("record").ToString();
         coinTxt.text = PlayerPrefs.GetInt("coins").ToString();
-        if (PlayerPrefs.GetInt("sound", 0) == 0)
+        if (PlayerPrefs.GetInt("sound", 0) == 1)
         {
             TxtButton.text = "Включены";
         }

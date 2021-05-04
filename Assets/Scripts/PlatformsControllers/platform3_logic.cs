@@ -6,20 +6,17 @@ using DG.Tweening;
 public class platform3_logic : MonoBehaviour
 {
     GameObject poolSys;
-    List<GameObject> train;
-
+    List<GameObject> train;    
 
 
     private float time;
-    int type_car;
-    int pos;
-    int last_pos;
+    public float pos;
     void Start()
     {
         poolSys = GameObject.Find("PoolingObj");
         train = poolSys.GetComponent<PoolingSystem>().train;
         time = Random.Range(4, 6);
-        pos = poolSys.GetComponent<PoolingSystem>().pos_plat_2;
+        pos = poolSys.GetComponent<PoolingSystem>().pos_plat_3;
     }
 
     void Update()
@@ -27,7 +24,11 @@ public class platform3_logic : MonoBehaviour
         time -= Time.deltaTime;
         if (time <= 0 && this.gameObject.activeSelf)
         {
-            if (this.gameObject.activeSelf) pos = poolSys.GetComponent<PoolingSystem>().pos_plat_3;
+            if (this.gameObject.activeSelf)
+            {
+                pos = this.gameObject.transform.position.z;
+            }
+
             time = Random.Range(4, 6);
             var tra = train.Find(item => item.activeSelf == false);
             var seq = DOTween.Sequence();
@@ -39,7 +40,7 @@ public class platform3_logic : MonoBehaviour
             void complete()
             {
                 tra.SetActive(false);
-            }     
+            }
         }
     }
 }

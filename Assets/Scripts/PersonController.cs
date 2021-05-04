@@ -40,21 +40,22 @@ public class PersonController : MonoBehaviour
 
     private void Start()
     {
-        var audioLis = camera.GetComponent<AudioListener>();
-        if (PlayerPrefs.GetInt("sound") == 0)
-        {
-            audioLis.enabled = false;
-        } 
-        else
-        {
-            audioLis.enabled = true;
-        }
+
+
             
             
         audio = GetComponent<AudioSource>();
         poolingSystem = poolSysObj.GetComponent<PoolingSystem>();
         PersonController.SwipeEvent += CheckInput;
-        ScoreText = stepCountText.GetComponent<Text>();        
+        ScoreText = stepCountText.GetComponent<Text>();
+        if (PlayerPrefs.GetInt("sound") == 0)
+        {
+            audio.mute = false;
+        }
+        else
+        {
+            audio.mute = true;
+        }
     }    
 
     public void CheckInput(SwipeType t)
@@ -62,20 +63,21 @@ public class PersonController : MonoBehaviour
         if (t == SwipeType.Right && countDirectionLeftRight<4 && checkLetright())
         {
             audio.PlayOneShot(din);
-            camera.transform.DOMove(new Vector3(transform.position.x, camera.transform.position.y, camera.transform.position.z), 0.1f);
-            //camera.transform.position = new Vector3(transform.position.x, camera.transform.position.y, camera.transform.position.z);
+            
+           
             countDirectionLeftRight++;
             transform.DOJump(new Vector3(countDirectionLeftRight, 0, countForwardBack), 1, 1, 0.2f, false);
+            camera.transform.DOMove(new Vector3(countDirectionLeftRight, camera.transform.position.y, camera.transform.position.z), 0.1f);
             transform.DORotate(new Vector3(0, 270, 0), 0.2f);
 
         }
         if (t == SwipeType.Left && countDirectionLeftRight >-4 && checkLetleft())
         {
             audio.PlayOneShot(din);
-            camera.transform.DOMove(new Vector3(transform.position.x, camera.transform.position.y, camera.transform.position.z), 0.1f);
-            //camera.transform.position = new Vector3(transform.position.x, camera.transform.position.y, camera.transform.position.z);
+            
             countDirectionLeftRight--;
             transform.DOJump(new Vector3(countDirectionLeftRight, 0, countForwardBack), 1, 1, 0.2f, false);
+            camera.transform.DOMove(new Vector3(countDirectionLeftRight, camera.transform.position.y, camera.transform.position.z), 0.1f);
             transform.DORotate(new Vector3(0, 90, 0), 0.2f);
         }
 
@@ -123,11 +125,6 @@ public class PersonController : MonoBehaviour
             }
         }
         CalculateSwipe();
-
-        //Debug.DrawRay(new Vector3(transform.position.x, transform.position.y + 0.3f, transform.position.z + 0.3f), Vector3.forward);
-        //Debug.DrawRay(new Vector3(transform.position.x, transform.position.y + 0.3f, transform.position.z - 0.3f), Vector3.back);
-        //Debug.DrawRay(new Vector3(transform.position.x - 0.3f, transform.position.y + 0.3f, transform.position.z), Vector3.left);
-        //Debug.DrawRay(new Vector3(transform.position.x + 0.3f, transform.position.y + 0.3f, transform.position.z), Vector3.right);
 
     }
 
