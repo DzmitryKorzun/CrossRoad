@@ -6,22 +6,42 @@ using UnityEngine.UI;
 
 public class SceneController : MonoBehaviour
 {
+    void Awake()
+    {
+        Screen.autorotateToLandscapeRight = false;
+        Screen.autorotateToPortraitUpsideDown = false;
+        Screen.autorotateToPortrait = false;
+        Screen.autorotateToLandscapeLeft = false;
+        Screen.orientation = ScreenOrientation.Landscape;
+    }
+
+
     public GameObject setting_panel;
     public GameObject recTxt;
     public GameObject coinTxt;
     public Text TxtButton;
     void Start()
     {
+ 
+
+
+
         recTxt.GetComponent<Text>().text = "Рекорд: "+PlayerPrefs.GetInt("record").ToString();
         coinTxt.GetComponent<Text>().text = PlayerPrefs.GetInt("coins").ToString();
+
         if (PlayerPrefs.GetInt("sound", 0) == 1)
         {
             TxtButton.text = "Включены";
+
         }
         else
         {
             TxtButton.text = "Выключены";
         }
+
+        Debug.Log(PlayerPrefs.GetInt("sound", 0) + "");
+
+
     }
 
 

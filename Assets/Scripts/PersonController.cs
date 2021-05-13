@@ -48,7 +48,7 @@ public class PersonController : MonoBehaviour
         poolingSystem = poolSysObj.GetComponent<PoolingSystem>();
         PersonController.SwipeEvent += CheckInput;
         ScoreText = stepCountText.GetComponent<Text>();
-        if (PlayerPrefs.GetInt("sound") == 0)
+        if (PlayerPrefs.GetInt("sound") == 1)
         {
             audio.mute = false;
         }
@@ -62,9 +62,7 @@ public class PersonController : MonoBehaviour
     {
         if (t == SwipeType.Right && countDirectionLeftRight<4 && checkLetright())
         {
-            audio.PlayOneShot(din);
-            
-           
+            audio.PlayOneShot(din);           
             countDirectionLeftRight++;
             transform.DOJump(new Vector3(countDirectionLeftRight, 0, countForwardBack), 1, 1, 0.2f, false);
             camera.transform.DOMove(new Vector3(countDirectionLeftRight, camera.transform.position.y, camera.transform.position.z), 0.1f);
